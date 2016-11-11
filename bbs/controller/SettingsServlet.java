@@ -61,6 +61,8 @@ IOException {
 		User editUser = getEditUser(request);
 		session.setAttribute("editUser", editUser);
 
+
+
 		if (isValid(request, messages) == true) {
 
 			try {
@@ -93,6 +95,12 @@ IOException {
 		editUser.setName(request.getParameter("name"));
 		editUser.setBranchId(Integer.valueOf(request.getParameter("branch")));
 		editUser.setDepartmentId(Integer.valueOf(request.getParameter("department")));
+
+
+		if(StringUtils.isEmpty(editUser.getPassword()) == true) {
+			//DBのusersテーブルから前のパスワードを持ってきてセット
+		}
+
 		return editUser;
 	}
 
@@ -101,15 +109,19 @@ IOException {
 		String loginId = request.getParameter("loginId");
 		String password = request.getParameter("password");
 		String password2 = request.getParameter("password2");
+		User user = new UserService().getUserId(loginId);
+
+
 
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
 		}
-		if(StringUtils.isEmpty(password) == true) {
-			messages.add("パスワードを入力してください");
-		}
+		//空白OKだからバリデーション消した
 		if(password != password2){
 			messages.add("パスワードが違います");
+		}
+		if(loginId == user.getLoginId()) {
+			messages.add("このIDは既に使用されています");
 		}
 		//TODO アカウントがすでに利用されていないか、メールアドレスがすでに登録されていないかどうかなどの確認も必要
 		if(messages.size() == 0) {

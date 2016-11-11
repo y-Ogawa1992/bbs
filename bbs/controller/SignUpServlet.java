@@ -69,26 +69,29 @@ public class SignUpServlet extends HttpServlet {
 	private boolean isValid(HttpServletRequest request, List<String> messages) {
 		String loginId = request.getParameter("login_id");
 		String password = request.getParameter("password");
-//		String name = request.getParameter("name");
+		String name = request.getParameter("name");
 
+		User user = new UserService().getUserId(loginId);
 
-
+		if(loginId == user.getLoginId()) {
+			messages.add("このIDは既に使用されています");
+		}
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
 		}
 		if(StringUtils.isEmpty(password) == true) {
 			messages.add("パスワードを入力してください");
 		}
-//		if (!loginId.matches("^[0-9a-zA-Z]{6,20}$")) {
-//			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
-//		}
-//		//パスワードに記号も含めたい[ -/:-@\[-\`\{-\~]もしくは^[a-zA-Z0-9 -/:-@\[-\`\{-\~]+$
-//		if(password.matches("^[0-9a-zA-Z_]{6,255}$")) {
-//			messages.add("パスワードは6文字以上で入力してください");
-//		}
-//		if(name.matches()) {
-//			messages.add("名前は10文字以下で入力してください");
-//		}
+		if (!loginId.matches("^[0-9a-zA-Z]{6,20}$")) {
+			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
+		}
+		//パスワードに記号も含めたい[ -/:-@\[-\`\{-\~]もしくは^[a-zA-Z0-9 -/:-@\[-\`\{-\~]+$
+		if(password.matches("^[0-9a-zA-Z_]{6,255}$")) {
+			messages.add("パスワードは6文字以上で入力してください");
+		}
+		if(10 < name.length()) {
+			messages.add("名前は10文字以下で入力してください");
+		}
 
 
 		//TODO アカウントがすでに利用されていないか、メールアドレスがすでに登録されていないかなどの確認も必要

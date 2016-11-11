@@ -56,4 +56,23 @@ public class CommentService {
 			close(connection);
 		}
 	}
+	public void delete(Comment comment) {
+		Connection connection = null;
+		try {
+			connection = getConnection();
+
+			CommentDao commentDao = new CommentDao();
+			commentDao.delete(connection, comment);
+
+			commit(connection);
+		} catch(RuntimeException e) {
+			rollback(connection);
+			throw e;
+		} catch(Error e) {
+			rollback(connection);
+			throw e;
+		} finally {
+			close(connection);
+		}
+	}
 }

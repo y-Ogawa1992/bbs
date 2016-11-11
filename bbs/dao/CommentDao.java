@@ -43,4 +43,25 @@ public class CommentDao {
 			close(ps);
 		}
 	}
+
+	public void delete(Connection connection, Comment comment) {
+
+			PreparedStatement ps = null;
+			try {
+				StringBuilder sql = new StringBuilder();
+				sql.append("DELETE FROM comments ");
+				sql.append("WHERE ");
+				sql.append("message_id = ?");
+
+				ps = connection.prepareStatement(sql.toString());
+
+				ps.setInt(1, comment.getMessageId());
+
+				ps.executeUpdate();
+			} catch(SQLException e) {
+				throw new SQLRuntimeException(e);
+			} finally {
+				close(ps);
+			}
+	}
 }

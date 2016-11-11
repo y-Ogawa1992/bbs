@@ -31,6 +31,7 @@ public class CommentServlet extends HttpServlet {
 
 			User user = (User) session.getAttribute("loginUser");
 
+
 			Comment comment = new Comment();
 			comment.setMessageId(Integer.valueOf(request.getParameter("messageId")));
 			comment.setUserId(user.getId());

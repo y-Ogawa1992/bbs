@@ -36,7 +36,7 @@ public class UserDao {
 			sql.append(", ?"); //name
 			sql.append(", ?"); //branch_id
 			sql.append(", ?"); //department_id
-			sql.append(", true");//stop
+			sql.append(", false");//stop
 			sql.append(", CURRENT_TIMESTAMP"); //insert_date
 			sql.append(", CURRENT_TIMESTAMP"); //update_date
 			sql.append(")");
@@ -219,4 +219,31 @@ public class UserDao {
 			close(ps);
 		}
 	}
+
+	//ID重複確認
+	public User getUserId(Connection connection, String loginId) {
+
+		PreparedStatement ps = null;
+		try {
+			String sql = "SELECT * FROM users WHERE login_id = ?";
+
+			ps = connection.prepareStatement(sql);
+			ps.setString(1, loginId);
+
+			ResultSet rs = ps.executeQuery();
+			List<User> userList = toUserList(rs);
+			if (userList.isEmpty() == true) {
+				return null;
+			}
+			return userList.get(0);
+
+		} catch(SQLException e) {
+			throw new SQLRuntimeException(e);
+		} finally {
+			close(ps);
+		}
+	}
+
+	//●マップ使えばビューもいらない●
+
 }

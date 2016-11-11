@@ -58,13 +58,19 @@ public class NewMessageServlet extends HttpServlet {
 		String message = request.getParameter("text");
 		String category = request.getParameter("category");
 
-		if(StringUtils.isBlank(category) == true) {
+		if(StringUtils.isEmpty(title) == true) {
 			messages.add("タイトルを入力してください");
 		}
-		if(StringUtils.isBlank(category) == true) {
+		if(50 < title.length()) {
+			messages.add("50文字以下で入力してください");
+		}
+		if(StringUtils.isEmpty(category) == true) {
 			messages.add("カテゴリーを入力してください");
 		}
-		if(StringUtils.isBlank(message) == true) {
+		if(10 < category.length()) {
+			messages.add("10文字以下で入力してください");
+		}
+		if(StringUtils.isEmpty(message) == true) {
 			messages.add("メッセージを入力してください");
 		}
 		if(1000 < message.length()) {

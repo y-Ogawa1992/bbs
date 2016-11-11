@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import bbs.beans.Comment;
 import bbs.beans.Message;
 import bbs.beans.User;
 import bbs.beans.UserComment;
@@ -27,25 +28,38 @@ public class TopServlet extends HttpServlet {
 
 		List<UserMessage> messages = new MessageService().getMessage();
 		List<UserComment> comments = new CommentService().getComment();
+		HttpSession session = request.getSession();
+		User user = (User) session.getAttribute("loginUser");
 
+		//投稿のカテゴリ＆日時絞込み機能
+
+		request.setAttribute("user", user);
 		request.setAttribute("messages", messages);
 		request.setAttribute("comments", comments);
 		request.getRequestDispatcher("/top.jsp").forward(request,  response);
+
+		//投稿と付随するコメントの削除
+		if(user.getBranchId() == 2){
+
+			Message message = new Message();
+			message.setId(Integer.valueOf(request.getParameter("messageId")));
+
+			Comment comment = new Comment();
+			comment.setMessageId(Integer.valueOf(request.getParameter("messageId")));
+
+			new MessageService().delete(message);
+			new CommentService().delete(comment);
+			response.sendRedirect("./");
+
+
+		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		HttpSession session = request.getSession();
 
-			User user = (User) session.getAttribute("loginUser");
-
-			Message message = new Message();
-			message.setId(Integer.valueOf(request.getParameter("messageId")));
-
-			new MessageService().delete(message);
-			response.sendRedirect("./");
 	}
 
 }

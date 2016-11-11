@@ -36,7 +36,6 @@ public class UserMessage implements Serializable {
 		this.messageId = messageId;
 	}
 
-
 	public String getName() {
 		return name;
 	}
