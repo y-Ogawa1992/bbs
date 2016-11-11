@@ -76,4 +76,29 @@ public class MessageService {
 			close(connection);
 		}
 	}
+
+
+
+	//11/11
+	//受け取ったcategoryを元に絞込
+	public void search(String category){
+		Connection connection = null;
+		try {
+			connection = getConnection();
+
+			UserMessageDao messageDao = new UserMessageDao();
+			messageDao.getCategory(connection, category);
+
+			commit(connection);
+		} catch(RuntimeException e) {
+			rollback(connection);
+			throw e;
+		} catch(Error e) {
+			rollback(connection);
+			throw e;
+		} finally {
+			close(connection);
+		}
+	}
+
 }

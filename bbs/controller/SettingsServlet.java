@@ -61,8 +61,6 @@ IOException {
 		User editUser = getEditUser(request);
 		session.setAttribute("editUser", editUser);
 
-
-
 		if (isValid(request, messages) == true) {
 
 			try {
@@ -95,14 +93,9 @@ IOException {
 		editUser.setName(request.getParameter("name"));
 		editUser.setBranchId(Integer.valueOf(request.getParameter("branch")));
 		editUser.setDepartmentId(Integer.valueOf(request.getParameter("department")));
-
-
-		if(StringUtils.isEmpty(editUser.getPassword()) == true) {
-			//DBのusersテーブルから前のパスワードを持ってきてセット
-		}
-
 		return editUser;
 	}
+
 
 	private boolean isValid(HttpServletRequest request, List<String> messages) {
 

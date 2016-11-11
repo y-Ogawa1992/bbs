@@ -4,7 +4,10 @@ import static bbs.utils.CloseableUtil.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import bbs.beans.Message;
 import bbs.exception.SQLRuntimeException;
@@ -66,4 +69,41 @@ public class MessageDao {
 			close(ps);
 		}
 	}
+
+	public void select(Connection connection) {
+		PreparedStatement ps = null;
+		try {
+			StringBuilder sql = new StringBuilder();
+			sql.append("SELECT category FROM messages group by category");
+
+			ps = connection.prepareStatement(sql.toString());
+
+			ResultSet rs = ps.executeQuery();
+			List<Message> ret = toCategory(rs);
+			return;
+		} catch(SQLException e) {
+			throw new SQLRuntimeException(e);
+		} finally {
+			close(ps);
+		}
+	}
+
+	private List<Message> toCategory(ResultSet rs) throws SQLException {
+
+		List<Message> ret = new ArrayList<Message>();
+		try {
+			while (rs.next()) {
+				String category = rs.getString("category");
+
+				Message message = new Message();
+				message.setCategory(category);
+
+				ret.add(message);
+			}
+			return ret;
+		} finally {
+			close(rs);
+		}
+	}
+
 }

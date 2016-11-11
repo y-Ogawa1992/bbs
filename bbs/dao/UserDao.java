@@ -195,7 +195,9 @@ public class UserDao {
 			StringBuilder sql = new StringBuilder();
 			sql.append("UPDATE users SET");
 			sql.append(" login_id = ?");
-			sql.append(", password = ?");
+			if(user.getPassword() != null) {
+				sql.append(", password = ?");
+			}
 			sql.append(", name = ?");
 			sql.append(", branch_id = ?");
 			sql.append(", department_id = ?");
@@ -206,7 +208,9 @@ public class UserDao {
 			ps = connection.prepareStatement(sql.toString());
 
 			ps.setString(1, user.getLoginId());
-			ps.setString(2, user.getPassword());
+			if(user.getPassword() == null){
+				ps.setString(2, user.getPassword());
+			}
 			ps.setString(3, user.getName());
 			ps.setInt(4, user.getBranchId());
 			ps.setInt(5, user.getDepartmentId());

@@ -19,6 +19,7 @@ public class UserMessageDao {
 
 		PreparedStatement ps = null;
 		try {
+
 			StringBuilder sql = new StringBuilder();
 			sql.append("SELECT * FROM user_message ");
 
@@ -42,6 +43,8 @@ public class UserMessageDao {
 				int id = rs.getInt("id");
 				int userId = rs.getInt("user_id");
 				int messageId = rs.getInt("message_id");
+				int branchId = rs.getInt("branch_id");
+				int departmentId = rs.getInt("department_id");
 				String title = rs.getString("title");
 				String category = rs.getString("category");
 				String name = rs.getString("name");
@@ -52,6 +55,8 @@ public class UserMessageDao {
 				message.setId(id);
 				message.setUserId(userId);
 				message.setMessageId(messageId);
+				message.setBranchId(branchId);
+				message.setDepartmentId(departmentId);
 				message.setTitle(title);
 				message.setCategory(category);
 				message.setName(name);
@@ -66,5 +71,53 @@ public class UserMessageDao {
 		}
 	}
 
+	//11/11
+	//categoryを探すselect
+	public UserMessage select(Connection connection, String category) {
 
+		PreparedStatement ps = null;
+		try {
+			String sql = "SELECT * FROM user_message WHERE category = ?";
+
+			ps = connection.prepareStatement(sql);
+			ps.setString(1, category);
+
+			ResultSet rs = ps.executeQuery();
+			List<UserMessage> userList = toUserMessageList(rs);
+			if (userList.isEmpty() == true) {
+				return null;
+			} else {
+				return userList.get(0);
+			}
+		} catch (SQLException e) {
+			throw new SQLRuntimeException(e);
+		} finally {
+			close(ps);
+		}
+	}
+
+	//11/11
+	//categoryでの絞り込み
+	public UserMessage getCategory(Connection connection, String category) {
+
+		PreparedStatement ps = null;
+		try {
+			String sql = "SELECT * FROM user_message WHERE category = ?";
+
+			ps = connection.prepareStatement(sql);
+			ps.setString(1, category);
+
+			ResultSet rs = ps.executeQuery();
+			List<UserMessage> userList = toUserMessageList(rs);
+			if (userList.isEmpty() == true) {
+				return null;
+			} else {
+				return userList.get(0);
+			}
+		} catch (SQLException e) {
+			throw new SQLRuntimeException(e);
+		} finally {
+			close(ps);
+		}
+	}
 }
