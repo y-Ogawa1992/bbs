@@ -28,13 +28,23 @@ public class TopServlet extends HttpServlet {
 
 		//selectBoxで選択された値を拾ってくる
 		String category = request.getParameter("category");
-		String minInsertDate = request.getParameter("minInsertDate") + " 00:00:00";
-		String maxInsertDate = request.getParameter("maxInsertDate") + " 23:59:59";
+		String minInsertDate = request.getParameter("minInsertDate");
+		String maxInsertDate = request.getParameter("maxInsertDate");
+
+		//nullならDBから最古最新を探してsetするif文
+		if(minInsertDate == null && maxInsertDate == null) {
+			List<UserMessage> insDate = new MessageService().getInsertOldNew();
+		}
+
+
+		//この処理をどこでやる？
+//		minInsertDate = minInsertDate + " 00:00:00";
+//		maxInsertDate = maxInsertDate + " 23:59:59";
 
 		System.out.println(minInsertDate);
 		System.out.println(maxInsertDate);
 
-		List<UserMessage> messages = new MessageService().getMessage(category, minInsertDate, maxInsertDate);//
+		List<UserMessage> messages = new MessageService().getMessage(category, minInsertDate, maxInsertDate);
 		List<UserComment> comments = new CommentService().getComment();
 		List<Message> categories = new MessageService().getCategory();
 		HttpSession session = request.getSession();

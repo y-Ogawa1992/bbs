@@ -15,7 +15,9 @@ import bbs.exception.SQLRuntimeException;
 
 public class UserMessageDao {
 
-	public List<UserMessage> getUserMessages(Connection connection, String category, String minInsertDate, String maxInsertDate) {//String minInsertDate, String maxInsertDate
+	//投稿全部を表示させる
+	//条件分岐で絞り込みもする
+	public List<UserMessage> getUserMessages(Connection connection, String category, String minInsertDate, String maxInsertDate) {
 
 		PreparedStatement ps = null;
 		try {
@@ -28,14 +30,12 @@ public class UserMessageDao {
 			ps = connection.prepareStatement(sql.toString());
 			ps.setString(1, minInsertDate);
 			ps.setString(2, maxInsertDate);
-
-			ResultSet rs = ps.executeQuery();
-			List<UserMessage> ret = toUserMessageList(rs);
 			if(category != null) {
 				ps.setString(3, category);
 			}
+			ResultSet rs = ps.executeQuery();
+			List<UserMessage> ret = toUserMessageList(rs);
 			return ret;
-
 		} catch(SQLException e) {
 			throw new SQLRuntimeException(e);
 		} finally {
@@ -79,5 +79,27 @@ public class UserMessageDao {
 		}
 	}
 
+	//ここで最小値＝最古、最大値＝最新（今日）をデフォ入れ
+	public List<UserMessage> getInsertOldNew(Connection connection) {
+		PreparedStatement ps = null;
 
+		try {
+			StringBuilder sql = new StringBuilder();
+			sql.append("SELECT * FROM user_message ");
+			sql.append("ORDER BY insert_date ");
+			sql.append("LIMIT 1 ");
+			//sql.append("SELECT CURRENT_DATE ");
+
+			ps = connection.prepareStatement(sql.toString());
+			ResultSet rs = ps.executeQuery();
+			List<UserMessage> ret = toUserMessageList(rs);
+
+			return ret;
+		} catch(SQLException e) {
+			throw new SQLRuntimeException(e);
+		} finally {
+			close(ps);
+		}
+	}
 }
+

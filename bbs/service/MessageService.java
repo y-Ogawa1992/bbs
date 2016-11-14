@@ -101,6 +101,27 @@ public class MessageService {
 		}
 	}
 
-	//
+	//日付の初期値
+	public List<UserMessage> getInsertOldNew() {
 
+		Connection connection = null;
+		try {
+			connection = getConnection();
+
+			UserMessageDao messageDao = new UserMessageDao();
+			List<UserMessage> ret = messageDao.getInsertOldNew(connection);
+
+			commit(connection);
+
+			return ret;
+		} catch(RuntimeException e) {
+			rollback(connection);
+			throw e;
+		} catch(Error e) {
+			rollback(connection);
+			throw e;
+		} finally {
+			close(connection);
+		}
+	}
 }
