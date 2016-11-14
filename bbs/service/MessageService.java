@@ -34,14 +34,14 @@ public class MessageService {
 		}
 	}
 
-	public List<UserMessage> getMessage() {
+	public List<UserMessage> getMessage(String category, String minInsertDate, String maxInsertDate) {//String minInsertDate, String maxInsertDate
 
 		Connection connection = null;
 		try {
 			connection = getConnection();
 
 			UserMessageDao messageDao = new UserMessageDao();
-			List<UserMessage> ret = messageDao.getUserMessages(connection);
+			List<UserMessage> ret = messageDao.getUserMessages(connection, category, minInsertDate, maxInsertDate);//minInsertDate, maxInsertDate
 
 			commit(connection);
 
@@ -77,28 +77,30 @@ public class MessageService {
 		}
 	}
 
+	//Daoでgroup byしたcategory
+	public List<Message> getCategory() {
 
-
-	//11/11
-	//受け取ったcategoryを元に絞込
-	public void search(String category){
 		Connection connection = null;
 		try {
 			connection = getConnection();
 
-			UserMessageDao messageDao = new UserMessageDao();
-			messageDao.getCategory(connection, category);
+			MessageDao messageDao = new MessageDao();
+			List<Message> ret = messageDao.getMessageCategories(connection);
 
 			commit(connection);
+
+			return ret;
 		} catch(RuntimeException e) {
-			rollback(connection);
-			throw e;
+				rollback(connection);
+				throw e;
 		} catch(Error e) {
-			rollback(connection);
-			throw e;
+				rollback(connection);
+				throw e;
 		} finally {
-			close(connection);
+				close(connection);
 		}
 	}
+
+	//
 
 }

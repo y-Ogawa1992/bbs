@@ -73,14 +73,14 @@ public class SignUpServlet extends HttpServlet {
 
 		User user = new UserService().getUserId(loginId);
 
-		if(loginId == user.getLoginId()) {
-			messages.add("このIDは既に使用されています");
-		}
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
 		}
 		if(StringUtils.isEmpty(password) == true) {
 			messages.add("パスワードを入力してください");
+		}
+		if(StringUtils.isEmpty(name) == true) {
+			messages.add("名前を入力してください");
 		}
 		if (!loginId.matches("^[0-9a-zA-Z]{6,20}$")) {
 			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
@@ -91,6 +91,9 @@ public class SignUpServlet extends HttpServlet {
 		}
 		if(10 < name.length()) {
 			messages.add("名前は10文字以下で入力してください");
+		}
+		if(loginId == user.getLoginId()) {
+			messages.add("このIDは既に使用されています");
 		}
 
 

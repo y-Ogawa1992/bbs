@@ -70,7 +70,8 @@ public class MessageDao {
 		}
 	}
 
-	public void select(Connection connection) {
+	//categoryでselectしてtoCategoryに入れる
+	public List<Message> getMessageCategories(Connection connection) {
 		PreparedStatement ps = null;
 		try {
 			StringBuilder sql = new StringBuilder();
@@ -79,31 +80,29 @@ public class MessageDao {
 			ps = connection.prepareStatement(sql.toString());
 
 			ResultSet rs = ps.executeQuery();
-			List<Message> ret = toCategory(rs);
-			return;
-		} catch(SQLException e) {
-			throw new SQLRuntimeException(e);
-		} finally {
-			close(ps);
-		}
+			List<Message> ret = toCategoryList(rs);
+			return ret;
+			} catch(SQLException e) {
+				throw new SQLRuntimeException(e);
+			} finally {
+				close(ps);
+			}
 	}
 
-	private List<Message> toCategory(ResultSet rs) throws SQLException {
-
+	//toCategoryの処理
+	private List<Message> toCategoryList(ResultSet rs) throws SQLException {
 		List<Message> ret = new ArrayList<Message>();
 		try {
 			while (rs.next()) {
 				String category = rs.getString("category");
 
-				Message message = new Message();
-				message.setCategory(category);
-
-				ret.add(message);
+				Message categories = new Message();
+				categories.setCategory(category);
+				ret.add(categories);
 			}
 			return ret;
 		} finally {
 			close(rs);
 		}
 	}
-
 }

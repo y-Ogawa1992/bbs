@@ -188,6 +188,7 @@ public class UserDao {
 	}
 
 	//ユーザー情報編集のアップデート
+	//出来なきゃpasswordだけでなく全部if囲み
 	public void update(Connection connection, User user) {
 
 		PreparedStatement ps = null;
@@ -208,7 +209,7 @@ public class UserDao {
 			ps = connection.prepareStatement(sql.toString());
 
 			ps.setString(1, user.getLoginId());
-			if(user.getPassword() == null){
+			if(user.getPassword() != null){
 				ps.setString(2, user.getPassword());
 			}
 			ps.setString(3, user.getName());

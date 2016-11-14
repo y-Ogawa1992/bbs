@@ -15,19 +15,27 @@ import bbs.exception.SQLRuntimeException;
 
 public class UserMessageDao {
 
-	public List<UserMessage> getUserMessages(Connection connection) {
+	public List<UserMessage> getUserMessages(Connection connection, String category, String minInsertDate, String maxInsertDate) {//String minInsertDate, String maxInsertDate
 
 		PreparedStatement ps = null;
 		try {
-
 			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT * FROM user_message ");
+			sql.append("SELECT * FROM user_message WHERE insert_date BETWEEN ? AND ? ");
 
+			if(category != null) {
+				sql.append("AND category = ? ");
+			}
 			ps = connection.prepareStatement(sql.toString());
+			ps.setString(1, minInsertDate);
+			ps.setString(2, maxInsertDate);
 
 			ResultSet rs = ps.executeQuery();
 			List<UserMessage> ret = toUserMessageList(rs);
+			if(category != null) {
+				ps.setString(3, category);
+			}
 			return ret;
+
 		} catch(SQLException e) {
 			throw new SQLRuntimeException(e);
 		} finally {
@@ -71,53 +79,5 @@ public class UserMessageDao {
 		}
 	}
 
-	//11/11
-	//categoryを探すselect
-	public UserMessage select(Connection connection, String category) {
 
-		PreparedStatement ps = null;
-		try {
-			String sql = "SELECT * FROM user_message WHERE category = ?";
-
-			ps = connection.prepareStatement(sql);
-			ps.setString(1, category);
-
-			ResultSet rs = ps.executeQuery();
-			List<UserMessage> userList = toUserMessageList(rs);
-			if (userList.isEmpty() == true) {
-				return null;
-			} else {
-				return userList.get(0);
-			}
-		} catch (SQLException e) {
-			throw new SQLRuntimeException(e);
-		} finally {
-			close(ps);
-		}
-	}
-
-	//11/11
-	//categoryでの絞り込み
-	public UserMessage getCategory(Connection connection, String category) {
-
-		PreparedStatement ps = null;
-		try {
-			String sql = "SELECT * FROM user_message WHERE category = ?";
-
-			ps = connection.prepareStatement(sql);
-			ps.setString(1, category);
-
-			ResultSet rs = ps.executeQuery();
-			List<UserMessage> userList = toUserMessageList(rs);
-			if (userList.isEmpty() == true) {
-				return null;
-			} else {
-				return userList.get(0);
-			}
-		} catch (SQLException e) {
-			throw new SQLRuntimeException(e);
-		} finally {
-			close(ps);
-		}
-	}
 }

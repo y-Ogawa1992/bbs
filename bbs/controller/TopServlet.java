@@ -26,19 +26,25 @@ public class TopServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
-		List<UserMessage> messages = new MessageService().getMessage();
+		//selectBoxで選択された値を拾ってくる
+		String category = request.getParameter("category");
+		String minInsertDate = request.getParameter("minInsertDate") + " 00:00:00";
+		String maxInsertDate = request.getParameter("maxInsertDate") + " 23:59:59";
+
+		System.out.println(minInsertDate);
+		System.out.println(maxInsertDate);
+
+		List<UserMessage> messages = new MessageService().getMessage(category, minInsertDate, maxInsertDate);//
 		List<UserComment> comments = new CommentService().getComment();
+		List<Message> categories = new MessageService().getCategory();
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("loginUser");
 
 
-		//投稿のカテゴリ＆日時絞込み機能
-		String cate = request.getParameter("category");
-		new MessageService().search(cate);
-
 		request.setAttribute("user", user);
 		request.setAttribute("messages", messages);
 		request.setAttribute("comments", comments);
+		request.setAttribute("categories", categories);
 		request.getRequestDispatcher("/top.jsp").forward(request,  response);
 
 	}
@@ -61,5 +67,3 @@ public class TopServlet extends HttpServlet {
 	}
 
 }
-
-
