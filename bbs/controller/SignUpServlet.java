@@ -60,6 +60,11 @@ public class SignUpServlet extends HttpServlet {
 
 			response.sendRedirect("./");
 		} else {
+			List<Branch> branch = new BranchService().getBranch();
+			List<Department> department = new DepartmentService().getDepartment();
+
+			request.setAttribute("department", department);
+			request.setAttribute("branch", branch);
 			session.setAttribute("errorMessages", messages);
 			request.setAttribute("user", user);
 			request.getRequestDispatcher("signup.jsp").forward(request, response);;
@@ -70,31 +75,44 @@ public class SignUpServlet extends HttpServlet {
 		String loginId = request.getParameter("login_id");
 		String password = request.getParameter("password");
 		String name = request.getParameter("name");
+		Integer branchId = Integer.valueOf(request.getParameter("branch"));
+		Integer departmentId = Integer.valueOf(request.getParameter("department"));
 
 		User user = new UserService().getUserId(loginId);
 
-		if(StringUtils.isEmpty(loginId) == true) {
-			messages.add("ログインIDを入力してください");
-		}
-		if(StringUtils.isEmpty(password) == true) {
-			messages.add("パスワードを入力してください");
-		}
 		if(StringUtils.isEmpty(name) == true) {
 			messages.add("名前を入力してください");
-		}
-		if (!loginId.matches("^[0-9a-zA-Z]{6,20}$")) {
-			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
-		}
-		//パスワードに記号も含めたい[ -/:-@\[-\`\{-\~]もしくは^[a-zA-Z0-9 -/:-@\[-\`\{-\~]+$
-		if(password.matches("^[0-9a-zA-Z_]{6,255}$")) {
-			messages.add("パスワードは6文字以上で入力してください");
-		}
-		if(10 < name.length()) {
+		}else if(10 < name.length()) {
 			messages.add("名前は10文字以下で入力してください");
 		}
-		if(loginId == user.getLoginId()) {
+
+		if(StringUtils.isEmpty(loginId) == true) {
+			messages.add("ログインIDを入力してください");
+		}else if(!loginId.matches("^[0-9a-zA-Z]{6,20}$")) {
+			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
+		}else if(loginId.equals(user.getLoginId())) {
 			messages.add("このIDは既に使用されています");
 		}
+
+		if(StringUtils.isEmpty(password) == true) {
+			messages.add("パスワードを入力してください");
+		}else if(!password.matches("^[0-9a-zA-Z_]{6,255}$")) {
+			messages.add("パスワードは6文字以上で入力してください");
+		}
+
+		if(branchId == 0) {
+			messages.add("所属を選択してください");
+		}
+		if(departmentId == 0) {
+			messages.add("役職を選択してください");
+		}
+
+//		if (!loginId.matches("^[0-9a-zA-Z]{6,20}$")) {
+//			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
+//		}
+		//パスワードに記号も含めたい[ -/:-@\[-\`\{-\~]もしくは^[a-zA-Z0-9 -/:-@\[-\`\{-\~]+$
+
+
 
 
 		//TODO アカウントがすでに利用されていないか、メールアドレスがすでに登録されていないかなどの確認も必要

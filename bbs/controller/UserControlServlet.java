@@ -53,8 +53,12 @@ public class UserControlServlet extends HttpServlet {
 
 		new UserService().stop(user, user.getId(), user.getStop());
 
+		List<Department> department = new DepartmentService().getDepartment();
+		List<Branch> branch = new BranchService().getBranch();
 		List<User> Users = new UserService().getUsers();
 		request.setAttribute("Users", Users);
+		request.setAttribute("department", department);
+		request.setAttribute("branch", branch);
 		request.getRequestDispatcher("/userControl.jsp").forward(request,  response);
 	}
 

@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import bbs.beans.Branch;
 import bbs.beans.Department;
 import bbs.beans.User;
-import bbs.exception.NoRowsUpdatedRuntimeException;
 import bbs.service.BranchService;
 import bbs.service.DepartmentService;
 import bbs.service.UserService;
@@ -24,7 +23,6 @@ import bbs.service.UserService;
 @WebServlet(urlPatterns = { "/settings"})
 public class SettingsServlet extends HttpServlet {
 
-	//【パスワードが空白の場合は変更無し】の処理をしていない
 	//【所属と役職が初期値で渡っていない】
 
 	private static final long serialVersionUID = 1L;
@@ -62,23 +60,16 @@ IOException {
 		session.setAttribute("editUser", editUser);
 
 		if (isValid(request, messages) == true) {
+			new UserService().update(editUser);
 
-			try {
-				new UserService().update(editUser);
-			} catch (NoRowsUpdatedRuntimeException e) {
-				session.removeAttribute("editUser");
-				messages.add("他の人によって更新されています。最新のデータを表示しました。データを確認してください。");
-				session.setAttribute("errorMessages", messages);
-				response.sendRedirect("settings");
-			}
+			request.setAttribute("loginUser", editUser);
+			request.setAttribute("editUser", editUser);
 
-			session.setAttribute("loginUser", editUser);
-			session.removeAttribute("editUser");
-
-			response.sendRedirect("settings.jsp");
+			response.sendRedirect("userControl");
 		} else {
 			session.setAttribute("errorMessages", messages);
-			response.sendRedirect("settings.jsp");
+			request.setAttribute("editUser", editUser);
+			response.sendRedirect("settings");
 		}
 	}
 
@@ -99,24 +90,37 @@ IOException {
 
 	private boolean isValid(HttpServletRequest request, List<String> messages) {
 
+		String name = request.getParameter("name");
 		String loginId = request.getParameter("loginId");
 		String password = request.getParameter("password");
 		String password2 = request.getParameter("password2");
+		Integer branchId = Integer.valueOf(request.getParameter("branch"));
+		Integer departmentId = Integer.valueOf(request.getParameter("department"));
 		User user = new UserService().getUserId(loginId);
 
 
 
+		if(StringUtils.isEmpty(name) == true) {
+			messages.add("名前を入力してください");
+		}
+
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
-		}
-		//空白OKだからバリデーション消した
-		if(password != password2){
-			messages.add("パスワードが違います");
-		}
-		if(loginId == user.getLoginId()) {
+		}else if(loginId == user.getLoginId()) {
 			messages.add("このIDは既に使用されています");
 		}
-		//TODO アカウントがすでに利用されていないか、メールアドレスがすでに登録されていないかどうかなどの確認も必要
+
+		if(!password.equals(password2)){
+			messages.add("変更用、確認用パスワードに相違があります");
+		}
+
+		if(branchId == 0) {
+			messages.add("所属を選択してください");
+		}
+		if(departmentId == 0) {
+			messages.add("役職を選択してください");
+		}
+
 		if(messages.size() == 0) {
 			return true;
 		} else {

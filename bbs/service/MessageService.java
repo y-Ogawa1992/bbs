@@ -34,14 +34,14 @@ public class MessageService {
 		}
 	}
 
-	public List<UserMessage> getMessage(String category, String minInsertDate, String maxInsertDate) {//String minInsertDate, String maxInsertDate
+	public List<UserMessage> getMessage(String category, String minInsertDate, String maxInsertDate) {
 
 		Connection connection = null;
 		try {
 			connection = getConnection();
 
 			UserMessageDao messageDao = new UserMessageDao();
-			List<UserMessage> ret = messageDao.getUserMessages(connection, category, minInsertDate, maxInsertDate);//minInsertDate, maxInsertDate
+			List<UserMessage> ret = messageDao.getUserMessages(connection, category, minInsertDate, maxInsertDate);
 
 			commit(connection);
 
@@ -101,15 +101,15 @@ public class MessageService {
 		}
 	}
 
-	//日付の初期値
-	public List<UserMessage> getInsertOldNew() {
+	//日付の初期値最古
+	public List<UserMessage> getInsertOld() {
 
 		Connection connection = null;
 		try {
 			connection = getConnection();
 
 			UserMessageDao messageDao = new UserMessageDao();
-			List<UserMessage> ret = messageDao.getInsertOldNew(connection);
+			List<UserMessage> ret = messageDao.getInsertOld(connection);
 
 			commit(connection);
 
@@ -124,4 +124,29 @@ public class MessageService {
 			close(connection);
 		}
 	}
+
+	//日付の初期値最新
+	public List<UserMessage> getInsertNew() {
+
+		Connection connection = null;
+		try {
+			connection = getConnection();
+
+			UserMessageDao messageDao = new UserMessageDao();
+			List<UserMessage> ret = messageDao.getInsertNew(connection);
+
+			commit(connection);
+
+			return ret;
+		} catch(RuntimeException e) {
+			rollback(connection);
+			throw e;
+		} catch(Error e) {
+			rollback(connection);
+			throw e;
+		} finally {
+			close(connection);
+		}
+	}
+
 }

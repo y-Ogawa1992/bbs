@@ -63,19 +63,19 @@ public class NewMessageServlet extends HttpServlet {
 			messages.add("タイトルを入力してください");
 		}
 		if(50 < title.length()) {
-			messages.add("50文字以下で入力してください");
+			messages.add("タイトルは50文字以下で入力してください");
 		}
 		if(StringUtils.isEmpty(category) == true) {
 			messages.add("カテゴリーを入力してください");
 		}
 		if(10 < category.length()) {
-			messages.add("10文字以下で入力してください");
+			messages.add("カテゴリーは10文字以下で入力してください");
 		}
 		if(StringUtils.isEmpty(message) == true) {
-			messages.add("メッセージを入力してください");
+			messages.add("本文を入力してください");
 		}
 		if(1000 < message.length()) {
-			messages.add("1000文字以下で入力してください");
+			messages.add("本文1000文字以下で入力してください");
 		}
 		if(messages.size() == 0) {
 			return true;
