@@ -25,29 +25,28 @@ import bbs.service.MessageService;
 public class TopServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	//11.15
-	//絞り込みのセレクトボックス値保持できていない
-	//
 
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 
 		//selectBoxで選択された値を拾ってくる
+		//ログイン時はnullが拾える
 		String category = request.getParameter("category");
 		String minInsertDate = request.getParameter("minInsertDate");
 		String maxInsertDate = request.getParameter("maxInsertDate");
 
+		System.out.println(minInsertDate);
+
 		//nullならDBから最古最新を探してsetするif文
+		List<UserMessage> oldMessage = new MessageService().getInsertOld();
+		List<UserMessage> newMessage = new MessageService().getInsertNew();
+
 		if(StringUtils.isEmpty(minInsertDate) == true && StringUtils.isEmpty(maxInsertDate) == true) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-			List<UserMessage> oldMessage = new MessageService().getInsertOld();
-			List<UserMessage> newMessage = new MessageService().getInsertNew();
-
 			minInsertDate = sdf.format(oldMessage.get(0).getInsertDate()) + ".0";
 			maxInsertDate = sdf.format(newMessage.get(0).getInsertDate()) + ".0";
-
+			System.out.println(minInsertDate);
 		}else {
 			minInsertDate = minInsertDate + " 00:00:00.0";
 			maxInsertDate = maxInsertDate + " 23:59:59.9";
@@ -59,10 +58,15 @@ public class TopServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("loginUser");
 
-		session.setAttribute("minInsertDate", minInsertDate);
-		session.setAttribute("maxInsertDate", maxInsertDate);
-		session.setAttribute("category", category);
+		String[] minInDa = minInsertDate.split(" ", 0);
+		String[] maxInDa = maxInsertDate.split(" ", 0);
 
+		if(ユーザーが選択しないもしくは選択する) {
+			request.setAttribute("minInDa", minInDa);
+			request.setAttribute("maxInDa", maxInDa);
+		}
+
+		request.setAttribute("category", category);
 		request.setAttribute("user", user);
 		request.setAttribute("messages", messages);
 		request.setAttribute("comments", comments);

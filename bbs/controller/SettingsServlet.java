@@ -23,8 +23,6 @@ import bbs.service.UserService;
 @WebServlet(urlPatterns = { "/settings"})
 public class SettingsServlet extends HttpServlet {
 
-	//【所属と役職が初期値で渡っていない】
-
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -37,12 +35,14 @@ IOException {
 		List<Branch> branch = new BranchService().getBranch();
 		List<Department> department = new DepartmentService().getDepartment();
 
+		request.setAttribute("department", department);
+		request.setAttribute("branch", branch);
+
 		//getIdで探したユーザー情報を編集画面表示時にセット
 		HttpSession session = request.getSession();
 		User editUser = new UserService().getUser(user.getId());
 		session.setAttribute("editUser", editUser);
-		session.setAttribute("department", department);
-		session.setAttribute("branch", branch);
+
 
 		request.getRequestDispatcher("settings.jsp").forward(request, response);
 	}
@@ -69,7 +69,7 @@ IOException {
 		} else {
 			session.setAttribute("errorMessages", messages);
 			request.setAttribute("editUser", editUser);
-			response.sendRedirect("settings");
+			response.sendRedirect("settings?id=" + editUser.getId());//ここ
 		}
 	}
 
@@ -94,8 +94,6 @@ IOException {
 		String loginId = request.getParameter("loginId");
 		String password = request.getParameter("password");
 		String password2 = request.getParameter("password2");
-		Integer branchId = Integer.valueOf(request.getParameter("branch"));
-		Integer departmentId = Integer.valueOf(request.getParameter("department"));
 		User user = new UserService().getUserId(loginId);
 
 
@@ -112,13 +110,6 @@ IOException {
 
 		if(!password.equals(password2)){
 			messages.add("変更用、確認用パスワードに相違があります");
-		}
-
-		if(branchId == 0) {
-			messages.add("所属を選択してください");
-		}
-		if(departmentId == 0) {
-			messages.add("役職を選択してください");
 		}
 
 		if(messages.size() == 0) {

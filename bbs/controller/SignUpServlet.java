@@ -34,6 +34,7 @@ public class SignUpServlet extends HttpServlet {
 
 		request.setAttribute("department", department);
 		request.setAttribute("branch", branch);
+
 		request.getRequestDispatcher("/signup.jsp").forward(request,  response);
 
 	}
@@ -88,7 +89,7 @@ public class SignUpServlet extends HttpServlet {
 
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
-		}else if(!loginId.matches("^[0-9a-zA-Z]{6,20}$")) {
+		}else if(!loginId.matches("^[a-zA-Z0-9!-/:-@¥[-`{-~]+${6,20}$")) {
 			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
 		}else if(loginId.equals(user.getLoginId())) {
 			messages.add("このIDは既に使用されています");

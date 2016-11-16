@@ -37,7 +37,6 @@ public class UserMessageDao {
 			if(StringUtils.isEmpty(category) != true) {
 				ps.setString(3, category);
 			}
-			System.out.println(ps);
 			ResultSet rs = ps.executeQuery();
 			List<UserMessage> ret = toUserMessageList(rs);
 			return ret;

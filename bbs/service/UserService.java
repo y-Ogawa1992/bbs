@@ -6,6 +6,8 @@ import static bbs.utils.DBUtil.*;
 import java.sql.Connection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import bbs.beans.User;
 import bbs.dao.UserDao;
 import bbs.utils.CipherUtil;
@@ -143,8 +145,12 @@ public class UserService {
 		try{
 			connection = getConnection();
 
+			if(StringUtils.isEmpty(user.getPassword()) != true) {
+
 			String encPassword = CipherUtil.encrypt(user.getPassword());
 			user.setPassword(encPassword);
+
+			}
 
 			UserDao userDao = new UserDao();
 			userDao.update(connection, user);
