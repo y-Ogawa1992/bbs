@@ -36,32 +36,33 @@ public class TopServlet extends HttpServlet {
 		String minInsertDate = request.getParameter("minInsertDate");
 		String maxInsertDate = request.getParameter("maxInsertDate");
 
-		System.out.println(minInsertDate);
-
 		//nullならDBから最古最新を探してsetするif文
 		List<UserMessage> oldMessage = new MessageService().getInsertOld();
 		List<UserMessage> newMessage = new MessageService().getInsertNew();
+		String oldInsertDate;
+		String newInsertDate;
 
 		if(StringUtils.isEmpty(minInsertDate) == true && StringUtils.isEmpty(maxInsertDate) == true) {
+			//nullであればDBから拾う
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			minInsertDate = sdf.format(oldMessage.get(0).getInsertDate()) + ".0";
-			maxInsertDate = sdf.format(newMessage.get(0).getInsertDate()) + ".0";
-			System.out.println(minInsertDate);
+			oldInsertDate = sdf.format(oldMessage.get(0).getInsertDate()) + ".0";
+			newInsertDate = sdf.format(newMessage.get(0).getInsertDate()) + ".0";
 		}else {
-			minInsertDate = minInsertDate + " 00:00:00.0";
-			maxInsertDate = maxInsertDate + " 23:59:59.9";
+			//nullで無ければ時間足す
+			oldInsertDate = minInsertDate + " 00:00:00.0";
+			newInsertDate = maxInsertDate + " 23:59:59.9";
 		}
 
-		List<UserMessage> messages = new MessageService().getMessage(category, minInsertDate, maxInsertDate);
+		List<UserMessage> messages = new MessageService().getMessage(category, oldInsertDate, newInsertDate);
 		List<UserComment> comments = new CommentService().getComment();
 		List<Message> categories = new MessageService().getCategory();
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("loginUser");
 
-		String[] minInDa = minInsertDate.split(" ", 0);
-		String[] maxInDa = maxInsertDate.split(" ", 0);
+		String[] minInDa = oldInsertDate.split(" ", 0);
+		String[] maxInDa = newInsertDate.split(" ", 0);
 
-		if(ユーザーが選択しないもしくは選択する) {
+		if(StringUtils.isEmpty(minInsertDate) != true && StringUtils.isEmpty(maxInsertDate) != true) {
 			request.setAttribute("minInDa", minInDa);
 			request.setAttribute("maxInDa", maxInDa);
 		}

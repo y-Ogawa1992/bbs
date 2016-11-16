@@ -105,7 +105,7 @@ IOException {
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
 		}else if(loginId == user.getLoginId()) {
-			messages.add("このIDは既に使用されています");
+			messages.add("このIDは既に使用されています");//適応されていない
 		}
 
 		if(!password.equals(password2)){
