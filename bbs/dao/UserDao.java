@@ -257,6 +257,27 @@ public class UserDao {
 		}
 	}
 
-	//●マップ使えばビューもいらない●
+	//userId存在確認
+	public Boolean getUserExists(Connection connection, int userId) {
+		PreparedStatement ps = null;
+		try {
+			String sql = "SELECT EXISTS(SELECT * FROM user_message WHERE id = ?)";
+
+			ps = connection.prepareStatement(sql);
+			ps.setInt(1, userId);
+
+			ResultSet rs = ps.executeQuery();
+			List<User> userList = toUserList(rs);
+			if (userList.isEmpty() == true) {
+				return null;
+			}
+			return null;
+
+		} catch(SQLException e) {
+			throw new SQLRuntimeException(e);
+		} finally {
+			close(ps);
+		}
+	}
 
 }

@@ -42,16 +42,24 @@ public class TopServlet extends HttpServlet {
 		String oldInsertDate;
 		String newInsertDate;
 
+
 		if(StringUtils.isEmpty(minInsertDate) == true && StringUtils.isEmpty(maxInsertDate) == true) {
 			//nullであればDBから拾う
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			oldInsertDate = sdf.format(oldMessage.get(0).getInsertDate()) + ".0";
 			newInsertDate = sdf.format(newMessage.get(0).getInsertDate()) + ".0";
 		}else {
-			//nullで無ければ時間足す
+			//nullで無ければ日付の入力値を判定して、大小逆であれば入れ替えて時間を足す
+			int yyyymmdd = minInsertDate.compareTo(maxInsertDate);
+			if(yyyymmdd > 0){
+				String insert = minInsertDate;
+				minInsertDate = maxInsertDate;
+				maxInsertDate = insert;
+			}
 			oldInsertDate = minInsertDate + " 00:00:00.0";
 			newInsertDate = maxInsertDate + " 23:59:59.9";
-		}
+			}
+
 
 		List<UserMessage> messages = new MessageService().getMessage(category, oldInsertDate, newInsertDate);
 		List<UserComment> comments = new CommentService().getComment();

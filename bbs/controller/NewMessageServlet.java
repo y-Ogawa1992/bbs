@@ -41,6 +41,8 @@ public class NewMessageServlet extends HttpServlet {
 		message.setCategory(request.getParameter("category"));
 		message.setText(request.getParameter("text"));
 		message.setUserId(user.getId());
+		message.getText().replaceAll (" ", "<br>");
+		System.out.println(message.getText());
 
 		if(isValid(request, messages) == true) {
 

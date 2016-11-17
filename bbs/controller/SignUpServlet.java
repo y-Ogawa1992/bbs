@@ -53,20 +53,18 @@ public class SignUpServlet extends HttpServlet {
 		user.setBranchId(Integer.valueOf(request.getParameter("branch")));
 		user.setDepartmentId(Integer.valueOf(request.getParameter("department")));
 
-
-
 		if(isValid(request, messages) == true) {
 
 			new UserService().register(user);
-
 			response.sendRedirect("./");
 		} else {
 			List<Branch> branch = new BranchService().getBranch();
 			List<Department> department = new DepartmentService().getDepartment();
 
+
+			session.setAttribute("errorMessages", messages);
 			request.setAttribute("department", department);
 			request.setAttribute("branch", branch);
-			session.setAttribute("errorMessages", messages);
 			request.setAttribute("user", user);
 			request.getRequestDispatcher("signup.jsp").forward(request, response);;
 		}
@@ -89,10 +87,10 @@ public class SignUpServlet extends HttpServlet {
 
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
-		}else if(!loginId.matches("^[a-zA-Z0-9!-/:-@¥[-`{-~]+${6,20}$")) {
+		}else if(!loginId.matches("^[a-zA-Z0-9!-/:-@¥[-`{-~]]+${6,20}$")) {
 			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
 		}else if(loginId.equals(user.getLoginId())) {
-			messages.add("このIDは既に使用されています");
+			messages.add("このIDは既に使用されています");//適応されていない
 		}
 
 		if(StringUtils.isEmpty(password) == true) {

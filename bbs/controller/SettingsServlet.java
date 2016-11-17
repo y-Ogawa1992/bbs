@@ -29,18 +29,37 @@ public class SettingsServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 IOException {
 
-		User user = new User();
-		user.setId(Integer.valueOf(request.getParameter("id")));
+		//List<String> messages = new ArrayList<String>();
+
+		//getParameterで取った値が数字であるか
+		//～～～～～～で取った値がDBに存在するか否か
+		String userId = request.getParameter("id");
+		System.out.println(userId);
+		if(StringUtils.isEmpty(userId) == true){
+			response.sendRedirect("./userControl");
+			return;
+		}
+		if(!userId.matches("^[0-9]*$")) {
+			response.sendRedirect("./userControl");
+			return;
+		}
+		int userid = Integer.parseInt(userId);
+
+		User foundUser = new UserService().getUser(userid);
+		if(foundUser == null) {
+			response.sendRedirect("./userControl");
+			return;
+		}
+
 
 		List<Branch> branch = new BranchService().getBranch();
 		List<Department> department = new DepartmentService().getDepartment();
 
 		request.setAttribute("department", department);
 		request.setAttribute("branch", branch);
-
 		//getIdで探したユーザー情報を編集画面表示時にセット
 		HttpSession session = request.getSession();
-		User editUser = new UserService().getUser(user.getId());
+		User editUser = new UserService().getUser(userid);
 		session.setAttribute("editUser", editUser);
 
 
@@ -55,8 +74,8 @@ IOException {
 		List<String> messages = new ArrayList<String>();
 
 		HttpSession session = request.getSession();
-
 		User editUser = getEditUser(request);
+
 		session.setAttribute("editUser", editUser);
 
 		if (isValid(request, messages) == true) {
@@ -95,7 +114,8 @@ IOException {
 		String password = request.getParameter("password");
 		String password2 = request.getParameter("password2");
 		User user = new UserService().getUserId(loginId);
-
+//		User editUser = new UserService().getUser(user.getId());
+//		int id = Integer.valueOf(request.getParameter("id"));
 
 
 		if(StringUtils.isEmpty(name) == true) {
@@ -104,13 +124,25 @@ IOException {
 
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
-		}else if(loginId == user.getLoginId()) {
+		}else if(loginId.equals(user.getLoginId())) {
 			messages.add("このIDは既に使用されています");//適応されていない
 		}
 
 		if(!password.equals(password2)){
 			messages.add("変更用、確認用パスワードに相違があります");
 		}
+//		if(id != editUser.getId()) {
+//			messages.add("不正な操作が行われました");
+//		}
+//		if(true) {
+//		    try {
+//		        Integer.parseInt(id);
+//		        return true;
+//		    } catch (NumberFormatException e) {
+//		        return false;
+//		    }
+//			messages.add("不正な操作が行われました");
+//		}
 
 		if(messages.size() == 0) {
 			return true;
