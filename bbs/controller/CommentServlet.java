@@ -26,21 +26,21 @@ public class CommentServlet extends HttpServlet {
 
 		HttpSession session = request.getSession();
 		List<String> messages = new ArrayList<String>();
+		User user = (User) session.getAttribute("loginUser");
+
+		Comment comment = new Comment();
+		comment.setMessageId(Integer.valueOf(request.getParameter("messageId")));
+		comment.setUserId(user.getId());
+		comment.setText(request.getParameter("text"));
 
 		if(isValid(request, messages) == true) {
-
-			User user = (User) session.getAttribute("loginUser");
-
-
-			Comment comment = new Comment();
-			comment.setMessageId(Integer.valueOf(request.getParameter("messageId")));
-			comment.setUserId(user.getId());
-			comment.setText(request.getParameter("text"));
 
 			new CommentService().register(comment);
 			response.sendRedirect("./");
 		} else {
 			session.setAttribute("errorMessages", messages);
+
+			request.setAttribute("comment", comment);
 			response.sendRedirect("./");
 		}
 	}

@@ -41,6 +41,9 @@ public class UserCommentDao {
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				int userId = rs.getInt("user_id");
+				int commentId = rs.getInt("comment_id");
+				int branchId = rs.getInt("branch_id");
+				int departmentId = rs.getInt("department_id");
 				String name = rs.getString("name");
 				int messageId = rs.getInt("message_id");
 				String text = rs.getString("text");
@@ -49,6 +52,9 @@ public class UserCommentDao {
 				UserComment comment = new UserComment();
 				comment.setId(id);
 				comment.setUserId(userId);
+				comment.setCommentId(commentId);
+				comment.setBranchId(branchId);
+				comment.setDepartmentId(departmentId);
 				comment.setName(name);
 				comment.setMessageId(messageId);
 				comment.setText(text);

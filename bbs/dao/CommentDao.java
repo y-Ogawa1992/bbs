@@ -51,11 +51,12 @@ public class CommentDao {
 				StringBuilder sql = new StringBuilder();
 				sql.append("DELETE FROM comments ");
 				sql.append("WHERE ");
-				sql.append("message_id = ?");
+				sql.append("id = ?");
 
 				ps = connection.prepareStatement(sql.toString());
 
-				ps.setInt(1, comment.getMessageId());
+				ps.setInt(1, comment.getId());
+				System.out.println(ps);
 
 				ps.executeUpdate();
 			} catch(SQLException e) {

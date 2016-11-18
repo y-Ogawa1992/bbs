@@ -8,6 +8,9 @@ public class UserComment implements Serializable {
 
 	private int id;
 	private int userId;
+	private int commentId;
+	private int branchId;
+	private int departmentId;
 	private String name;
 	private int messageId;
 	private String text;
@@ -25,6 +28,26 @@ public class UserComment implements Serializable {
 	}
 	public void setUserId(int userId)  {
 		this.userId = userId;
+	}
+
+	public int getCommentId() {
+		return commentId;
+	}
+	public void setCommentId(int commentId) {
+		this.commentId = commentId;
+	}
+
+	public int getBranchId() {
+		return branchId;
+	}
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
+	}
+	public int getDepartmentId() {
+		return departmentId;
+	}
+	public void setDepartmentId(int departmentId) {
+		this.departmentId = departmentId;
 	}
 
 	public String getName() {

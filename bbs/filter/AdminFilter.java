@@ -1,6 +1,8 @@
 package bbs.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -23,23 +25,27 @@ public class AdminFilter implements Filter {
 
 		String target = ((HttpServletRequest)request).getRequestURI();
 		String[] login = target.split("/");
+		List<String> messages = new ArrayList<String>();
 
-			if(login[login.length -1].matches("userControl") ||login[login.length -1].matches("signup") ||
-					login[login.length -1].matches("settings")) {
-				HttpSession session = ((HttpServletRequest) request).getSession();
-				User user = (User) session.getAttribute("loginUser");
 
-				if(user == null) {
-					((HttpServletResponse) response).sendRedirect("./login");
-					return;
-				}
+		if(login[login.length -1].matches("userControl") ||login[login.length -1].matches("signup") ||
+				login[login.length -1].matches("settings")) {
+			HttpSession session = ((HttpServletRequest) request).getSession();
+			User user = (User) session.getAttribute("loginUser");
 
-				if(user.getDepartmentId() != 1) {
-					((HttpServletResponse) response).sendRedirect("./");
-					return;
-				}
+			if(user == null) {
+				((HttpServletResponse) response).sendRedirect("./login");
+				return;
 			}
-			chain.doFilter(request, response);
+
+			if(user.getDepartmentId() != 1) {
+				messages.add("権限がありません");
+				session.setAttribute("errorMessages", messages);
+				((HttpServletResponse) response).sendRedirect("./");
+				return;
+			}
+		}
+		chain.doFilter(request, response);
 	}
 
 

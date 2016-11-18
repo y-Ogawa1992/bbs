@@ -58,7 +58,7 @@ public class TopServlet extends HttpServlet {
 			}
 			oldInsertDate = minInsertDate + " 00:00:00.0";
 			newInsertDate = maxInsertDate + " 23:59:59.9";
-			}
+		}
 
 
 		List<UserMessage> messages = new MessageService().getMessage(category, oldInsertDate, newInsertDate);
@@ -75,11 +75,14 @@ public class TopServlet extends HttpServlet {
 			request.setAttribute("maxInDa", maxInDa);
 		}
 
+		Comment comment = new Comment();
+
 		request.setAttribute("category", category);
+		request.setAttribute("categories", categories);
 		request.setAttribute("user", user);
 		request.setAttribute("messages", messages);
 		request.setAttribute("comments", comments);
-		request.setAttribute("categories", categories);
+		request.setAttribute("comment", comment);
 		request.getRequestDispatcher("/top.jsp").forward(request,  response);
 	}
 
@@ -88,14 +91,23 @@ public class TopServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		//投稿と付随するコメントの削除post
 
+		//コメントのみ削除しようとしたら
+		//投稿のIdがgetParameter出来ないからエラーになる
+		String mId = request.getParameter("messageId");
+		String cId = request.getParameter("commentId");
 		Message message = new Message();
-		message.setId(Integer.valueOf(request.getParameter("messageId")));
-
 		Comment comment = new Comment();
-		comment.setMessageId(Integer.valueOf(request.getParameter("messageId")));
 
+		if(mId == null && cId != null){
+			comment.setId(Integer.valueOf(request.getParameter("commentId")));
+			new CommentService().delete(comment);
+		}
+
+		if(mId != null && cId == null){
+		message.setId(Integer.valueOf(request.getParameter("messageId")));
 		new MessageService().delete(message);
-		new CommentService().delete(comment);
+		}
+
 		response.sendRedirect("./");
 	}
 

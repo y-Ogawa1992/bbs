@@ -29,12 +29,18 @@ public class SignUpServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 		throws IOException, ServletException {
 
+		//①最初に表示するため
 		List<Branch> branch = new BranchService().getBranch();
 		List<Department> department = new DepartmentService().getDepartment();
 
-		request.setAttribute("department", department);
-		request.setAttribute("branch", branch);
+		User user = new User();
 
+		request.setAttribute("user", user);
+
+
+		//①最初に表示するため
+		request.setAttribute("branch", branch);
+		request.setAttribute("department", department);
 		request.getRequestDispatcher("/signup.jsp").forward(request,  response);
 
 	}
@@ -56,7 +62,7 @@ public class SignUpServlet extends HttpServlet {
 		if(isValid(request, messages) == true) {
 
 			new UserService().register(user);
-			response.sendRedirect("./");
+			response.sendRedirect("./userControl");
 		} else {
 			List<Branch> branch = new BranchService().getBranch();
 			List<Department> department = new DepartmentService().getDepartment();
@@ -66,7 +72,7 @@ public class SignUpServlet extends HttpServlet {
 			request.setAttribute("department", department);
 			request.setAttribute("branch", branch);
 			request.setAttribute("user", user);
-			request.getRequestDispatcher("signup.jsp").forward(request, response);;
+			request.getRequestDispatcher("signup.jsp").forward(request, response);
 		}
 	}
 
@@ -87,15 +93,15 @@ public class SignUpServlet extends HttpServlet {
 
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
-		}else if(!loginId.matches("^[a-zA-Z0-9!-/:-@¥[-`{-~]]+${6,20}$")) {
+		}else if(!loginId.matches("^[a-zA-Z0-9]{6,20}$")) {
 			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
-		}else if(loginId.equals(user.getLoginId())) {
-			messages.add("このIDは既に使用されています");//適応されていない
+		}else if(user != null) {
+			messages.add("このログインIDは既に使用されています");//適応されていない
 		}
 
 		if(StringUtils.isEmpty(password) == true) {
 			messages.add("パスワードを入力してください");
-		}else if(!password.matches("^[0-9a-zA-Z_]{6,255}$")) {
+		}else if(!password.matches("^[a-zA-Z0-9!-/:-@¥[-`{-~]]{6,255}$")) {
 			messages.add("パスワードは6文字以上で入力してください");
 		}
 
@@ -106,15 +112,6 @@ public class SignUpServlet extends HttpServlet {
 			messages.add("役職を選択してください");
 		}
 
-//		if (!loginId.matches("^[0-9a-zA-Z]{6,20}$")) {
-//			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
-//		}
-		//パスワードに記号も含めたい[ -/:-@\[-\`\{-\~]もしくは^[a-zA-Z0-9 -/:-@\[-\`\{-\~]+$
-
-
-
-
-		//TODO アカウントがすでに利用されていないか、メールアドレスがすでに登録されていないかなどの確認も必要
 		if(messages.size() == 0) {
 			return true;
 		} else {

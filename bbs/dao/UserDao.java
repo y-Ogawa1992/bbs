@@ -242,6 +242,7 @@ public class UserDao {
 
 			ps = connection.prepareStatement(sql);
 			ps.setString(1, loginId);
+			System.out.println(ps);
 
 			ResultSet rs = ps.executeQuery();
 			List<User> userList = toUserList(rs);
@@ -257,27 +258,5 @@ public class UserDao {
 		}
 	}
 
-	//userId存在確認
-	public Boolean getUserExists(Connection connection, int userId) {
-		PreparedStatement ps = null;
-		try {
-			String sql = "SELECT EXISTS(SELECT * FROM user_message WHERE id = ?)";
-
-			ps = connection.prepareStatement(sql);
-			ps.setInt(1, userId);
-
-			ResultSet rs = ps.executeQuery();
-			List<User> userList = toUserList(rs);
-			if (userList.isEmpty() == true) {
-				return null;
-			}
-			return null;
-
-		} catch(SQLException e) {
-			throw new SQLRuntimeException(e);
-		} finally {
-			close(ps);
-		}
-	}
 
 }

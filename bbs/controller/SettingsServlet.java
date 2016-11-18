@@ -34,7 +34,7 @@ IOException {
 		//getParameterで取った値が数字であるか
 		//～～～～～～で取った値がDBに存在するか否か
 		String userId = request.getParameter("id");
-		System.out.println(userId);
+		
 		if(StringUtils.isEmpty(userId) == true){
 			response.sendRedirect("./userControl");
 			return;
@@ -88,7 +88,7 @@ IOException {
 		} else {
 			session.setAttribute("errorMessages", messages);
 			request.setAttribute("editUser", editUser);
-			response.sendRedirect("settings?id=" + editUser.getId());//ここ
+			response.sendRedirect("settings?id=" + editUser.getId());
 		}
 	}
 
@@ -107,42 +107,34 @@ IOException {
 	}
 
 
-	private boolean isValid(HttpServletRequest request, List<String> messages) {
+	private boolean isValid(HttpServletRequest request, List<String> messages) throws IOException, ServletException {
 
 		String name = request.getParameter("name");
 		String loginId = request.getParameter("loginId");
 		String password = request.getParameter("password");
 		String password2 = request.getParameter("password2");
+
+		HttpSession session = request.getSession();
+		User editUser = (User) session.getAttribute("editUser");
 		User user = new UserService().getUserId(loginId);
-//		User editUser = new UserService().getUser(user.getId());
-//		int id = Integer.valueOf(request.getParameter("id"));
 
 
 		if(StringUtils.isEmpty(name) == true) {
 			messages.add("名前を入力してください");
 		}
 
+		//ログインID入力チェック、ID重複チェック時に変更無し処理
 		if(StringUtils.isEmpty(loginId) == true) {
 			messages.add("ログインIDを入力してください");
-		}else if(loginId.equals(user.getLoginId())) {
-			messages.add("このIDは既に使用されています");//適応されていない
+		}else if(!loginId.matches("^[a-zA-Z0-9]{6,20}$")) {
+			messages.add("ログインIDは半角英数字6文字から20文字で入力してください");
+		}else if(user != null && user.getId() != editUser.getId()) {
+			messages.add("このログインIDは既に使用されています");
 		}
 
 		if(!password.equals(password2)){
 			messages.add("変更用、確認用パスワードに相違があります");
 		}
-//		if(id != editUser.getId()) {
-//			messages.add("不正な操作が行われました");
-//		}
-//		if(true) {
-//		    try {
-//		        Integer.parseInt(id);
-//		        return true;
-//		    } catch (NumberFormatException e) {
-//		        return false;
-//		    }
-//			messages.add("不正な操作が行われました");
-//		}
 
 		if(messages.size() == 0) {
 			return true;

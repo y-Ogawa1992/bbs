@@ -24,7 +24,11 @@ public class NewMessageServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
+		Message message = new Message();
+		String text = request.getParameter("text");
 
+		request.setAttribute("text", text);
+		request.setAttribute("message", message);
 		request.getRequestDispatcher("message.jsp").forward(request, response);
 	}
 
@@ -41,8 +45,7 @@ public class NewMessageServlet extends HttpServlet {
 		message.setCategory(request.getParameter("category"));
 		message.setText(request.getParameter("text"));
 		message.setUserId(user.getId());
-		message.getText().replaceAll (" ", "<br>");
-		System.out.println(message.getText());
+
 
 		if(isValid(request, messages) == true) {
 
@@ -50,7 +53,8 @@ public class NewMessageServlet extends HttpServlet {
 			response.sendRedirect("./");
 		} else {
 			session.setAttribute("errorMessages", messages);
-			request.setAttribute("messages", messages);
+
+			request.setAttribute("message", message);
 			request.getRequestDispatcher("message.jsp").forward(request, response);
 		}
 	}
@@ -63,20 +67,17 @@ public class NewMessageServlet extends HttpServlet {
 
 		if(StringUtils.isEmpty(title) == true) {
 			messages.add("タイトルを入力してください");
-		}
-		if(50 < title.length()) {
+		}else if(50 < title.length()) {
 			messages.add("タイトルは50文字以下で入力してください");
 		}
 		if(StringUtils.isEmpty(category) == true) {
 			messages.add("カテゴリーを入力してください");
-		}
-		if(10 < category.length()) {
+		}else if(10 < category.length()) {
 			messages.add("カテゴリーは10文字以下で入力してください");
 		}
 		if(StringUtils.isEmpty(message) == true) {
 			messages.add("本文を入力してください");
-		}
-		if(1000 < message.length()) {
+		}else if(1000 < message.length()) {
 			messages.add("本文1000文字以下で入力してください");
 		}
 		if(messages.size() == 0) {
