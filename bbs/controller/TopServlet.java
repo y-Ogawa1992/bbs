@@ -61,19 +61,15 @@ public class TopServlet extends HttpServlet {
 			newInsertDate = sdf.format(newMessage.get(0).getInsertDate()) + ".0";
 
 			String[] minInDa = oldInsertDate.split(" ", 0);
-			String[] maxInDa = newInsertDate.split(" ", 0);
-
 			request.setAttribute("minInDa", minInDa);
-			request.setAttribute("maxInDa", maxInDa);
+
 		}else if(StringUtils.isEmpty(minInsertDate) == true && StringUtils.isEmpty(maxInsertDate) == false) {
 			oldInsertDate = sdf.format(oldMessage.get(0).getInsertDate()) + ".0";
 			newInsertDate = maxInsertDate + " 23:59:59.9";
 
-			String[] minInDa = oldInsertDate.split(" ", 0);
 			String[] maxInDa = newInsertDate.split(" ", 0);
-
-			request.setAttribute("minInDa", minInDa);
 			request.setAttribute("maxInDa", maxInDa);
+
 		}else {
 			//nullで無ければ日付の入力値を判定して、大小逆であれば入れ替えて時間を足す
 			int yyyymmdd = minInsertDate.compareTo(maxInsertDate);

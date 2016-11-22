@@ -37,13 +37,13 @@ IOException {
 		String userId = request.getParameter("id");
 
 		if(StringUtils.isEmpty(userId) == true){
-			messages.add("不正な操作が行われました");
+			messages.add("無効な操作が行われました");
 			session.setAttribute("errorMessages", messages);
 			response.sendRedirect("./userControl");
 			return;
 		}
 		if(!userId.matches("^[0-9]*$")) {
-			messages.add("不正な操作が行われました");
+			messages.add("無効な操作が行われました");
 			session.setAttribute("errorMessages", messages);
 			response.sendRedirect("./userControl");
 			return;
@@ -81,7 +81,7 @@ IOException {
 		List<String> messages = new ArrayList<String>();
 
 		HttpSession session = request.getSession();
-		User editUser = getEditUser(request);
+		User editUser = getEditUser(request, response);
 		User user = (User) session.getAttribute("loginUser");
 
 		if (isValid(request, messages) == true) {
@@ -115,21 +115,43 @@ IOException {
 	}
 
 
-	private User getEditUser(HttpServletRequest request) throws IOException, ServletException {
+	private User getEditUser(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
 
 		HttpSession session = request.getSession();
 		User editUser = (User) session.getAttribute("editUser");
-		User user = (User) session.getAttribute("loginUser");
 
 		editUser.setLoginId(request.getParameter("loginId"));
 		editUser.setPassword(request.getParameter("password"));
 		editUser.setName(request.getParameter("name"));
-		if(user.getId() != editUser.getId()) {
-			editUser.setBranchId(Integer.valueOf(request.getParameter("branch")));
-			editUser.setDepartmentId(Integer.valueOf(request.getParameter("department")));
-		}
+		editUser.setBranchId(Integer.valueOf(request.getParameter("branch")));
+		editUser.setDepartmentId(Integer.valueOf(request.getParameter("department")));
+		System.out.println(editUser.getBranchId());
+		System.out.println(editUser.getDepartmentId());
 		return editUser;
 	}
+
+	//ここから選択できるけど変更できない＆エラーメッセージ出す処理
+//		User user = (User) session.getAttribute("loginUser");
+//		int bId = Integer.valueOf(request.getParameter("branch"));
+//		int dId = Integer.valueOf(request.getParameter("department"));
+//		List<Branch> branch = new BranchService().getBranch();
+//		List<Department> department = new DepartmentService().getDepartment();
+//
+//		List<String> messages = new ArrayList<String>();
+
+//		if(user.getId() != editUser.getId()) {
+//			editUser.setBranchId(Integer.valueOf(request.getParameter("branch")));
+//			editUser.setDepartmentId(Integer.valueOf(request.getParameter("department")));
+//		}else if(user.getId() == editUser.getId() && bId != 1 && dId != 1){
+//			messages.add("人事総務担当者は自身の所属、役職の変更は出来ません。");
+//			session.setAttribute("errorMessages", messages);
+//			request.setAttribute("editUser", editUser);
+//			request.setAttribute("department", department);
+//			request.setAttribute("branch", branch);
+//			request.getRequestDispatcher("settings.jsp").forward(request, response);
+//		}
+
 
 
 	private boolean isValid(HttpServletRequest request, List<String> messages) throws IOException, ServletException {
