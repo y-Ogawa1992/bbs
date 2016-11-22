@@ -65,17 +65,17 @@ public class NewMessageServlet extends HttpServlet {
 		String message = request.getParameter("text");
 		String category = request.getParameter("category");
 
-		if(StringUtils.isEmpty(title) == true) {
+		if(StringUtils.isEmpty(title) == true || StringUtils.isBlank(title) == true) {
 			messages.add("タイトルを入力してください");
 		}else if(50 < title.length()) {
 			messages.add("タイトルは50文字以下で入力してください");
 		}
-		if(StringUtils.isEmpty(category) == true) {
+		if(StringUtils.isEmpty(category) == true || StringUtils.isBlank(category) == true) {
 			messages.add("カテゴリーを入力してください");
 		}else if(10 < category.length()) {
 			messages.add("カテゴリーは10文字以下で入力してください");
 		}
-		if(StringUtils.isEmpty(message) == true) {
+		if(StringUtils.isEmpty(message) == true || StringUtils.isBlank(message) == true) {
 			messages.add("本文を入力してください");
 		}else if(1000 < message.length()) {
 			messages.add("本文1000文字以下で入力してください");

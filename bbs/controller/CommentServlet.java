@@ -49,7 +49,7 @@ public class CommentServlet extends HttpServlet {
 
 		String comment = request.getParameter("text");
 
-		if(StringUtils.isEmpty(comment) == true) {
+		if(StringUtils.isEmpty(comment) == true || StringUtils.isBlank(comment)) {
 			messages.add("コメントを入力してください");
 		}
 		if(500 < comment.length()) {

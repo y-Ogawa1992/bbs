@@ -41,17 +41,43 @@ public class TopServlet extends HttpServlet {
 		List<UserMessage> newMessage = new MessageService().getInsertNew();
 		String oldInsertDate;
 		String newInsertDate;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+		if(oldMessage.size() == 0 && newMessage.size() == 0) {
+			oldInsertDate = "0000-00-00 00:00:00.0";
+			newInsertDate = "0000-00-00 00:00:00.0";
 
-		if(StringUtils.isEmpty(minInsertDate) == true && StringUtils.isEmpty(maxInsertDate) == true) {
-			//nullであればDBから拾う
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String[] minInDa = oldInsertDate.split(" ", 0);
+			String[] maxInDa = newInsertDate.split(" ", 0);
+
+			request.setAttribute("minInDa", minInDa);
+			request.setAttribute("maxInDa", maxInDa);
+		}else if(StringUtils.isEmpty(minInsertDate) == true && StringUtils.isEmpty(maxInsertDate) == true) {
+			//nullであればDBから拾う、DBに無ければtop表示
 			oldInsertDate = sdf.format(oldMessage.get(0).getInsertDate()) + ".0";
 			newInsertDate = sdf.format(newMessage.get(0).getInsertDate()) + ".0";
+		}else if(StringUtils.isEmpty(minInsertDate) == false && StringUtils.isEmpty(maxInsertDate) == true) {
+			oldInsertDate = minInsertDate + " 00:00:00.0";
+			newInsertDate = sdf.format(newMessage.get(0).getInsertDate()) + ".0";
+
+			String[] minInDa = oldInsertDate.split(" ", 0);
+			String[] maxInDa = newInsertDate.split(" ", 0);
+
+			request.setAttribute("minInDa", minInDa);
+			request.setAttribute("maxInDa", maxInDa);
+		}else if(StringUtils.isEmpty(minInsertDate) == true && StringUtils.isEmpty(maxInsertDate) == false) {
+			oldInsertDate = sdf.format(oldMessage.get(0).getInsertDate()) + ".0";
+			newInsertDate = maxInsertDate + " 23:59:59.9";
+
+			String[] minInDa = oldInsertDate.split(" ", 0);
+			String[] maxInDa = newInsertDate.split(" ", 0);
+
+			request.setAttribute("minInDa", minInDa);
+			request.setAttribute("maxInDa", maxInDa);
 		}else {
 			//nullで無ければ日付の入力値を判定して、大小逆であれば入れ替えて時間を足す
 			int yyyymmdd = minInsertDate.compareTo(maxInsertDate);
-			if(yyyymmdd > 0){
+			if(yyyymmdd > 0) {
 				String insert = minInsertDate;
 				minInsertDate = maxInsertDate;
 				maxInsertDate = insert;

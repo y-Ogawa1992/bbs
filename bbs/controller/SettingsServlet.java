@@ -29,17 +29,22 @@ public class SettingsServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 IOException {
 
-		//List<String> messages = new ArrayList<String>();
+		List<String> messages = new ArrayList<String>();
+		HttpSession session = request.getSession();
 
 		//getParameterで取った値が数字であるか
 		//～～～～～～で取った値がDBに存在するか否か
 		String userId = request.getParameter("id");
-		
+
 		if(StringUtils.isEmpty(userId) == true){
+			messages.add("不正な操作が行われました");
+			session.setAttribute("errorMessages", messages);
 			response.sendRedirect("./userControl");
 			return;
 		}
 		if(!userId.matches("^[0-9]*$")) {
+			messages.add("不正な操作が行われました");
+			session.setAttribute("errorMessages", messages);
 			response.sendRedirect("./userControl");
 			return;
 		}
@@ -47,6 +52,8 @@ IOException {
 
 		User foundUser = new UserService().getUser(userid);
 		if(foundUser == null) {
+			messages.add("存在しないユーザーです");
+			session.setAttribute("errorMessages", messages);
 			response.sendRedirect("./userControl");
 			return;
 		}
@@ -58,10 +65,10 @@ IOException {
 		request.setAttribute("department", department);
 		request.setAttribute("branch", branch);
 		//getIdで探したユーザー情報を編集画面表示時にセット
-		HttpSession session = request.getSession();
+
 		User editUser = new UserService().getUser(userid);
 		session.setAttribute("editUser", editUser);
-
+		request.setAttribute("editUser", editUser);
 
 		request.getRequestDispatcher("settings.jsp").forward(request, response);
 	}
@@ -75,20 +82,35 @@ IOException {
 
 		HttpSession session = request.getSession();
 		User editUser = getEditUser(request);
-
-		session.setAttribute("editUser", editUser);
+		User user = (User) session.getAttribute("loginUser");
 
 		if (isValid(request, messages) == true) {
 			new UserService().update(editUser);
 
-			request.setAttribute("loginUser", editUser);
-			request.setAttribute("editUser", editUser);
 
-			response.sendRedirect("userControl");
+			if(user.getId() == editUser.getId()){
+				session.setAttribute("loginUser", editUser);
+				response.sendRedirect("userControl");
+			}
+
+			if(editUser.getId() != user.getId()){
+				request.setAttribute("loginUser", editUser);
+				response.sendRedirect("userControl");
+			}
 		} else {
+
+			List<Branch> branch = new BranchService().getBranch();
+			List<Department> department = new DepartmentService().getDepartment();
+
 			session.setAttribute("errorMessages", messages);
 			request.setAttribute("editUser", editUser);
-			response.sendRedirect("settings?id=" + editUser.getId());
+			request.setAttribute("department", department);
+			request.setAttribute("branch", branch);
+
+			request.getRequestDispatcher("settings.jsp").forward(request, response);
+
+		//	response.sendRedirect("settings?id=" + editUser.getId());
+
 		}
 	}
 
@@ -97,12 +119,15 @@ IOException {
 
 		HttpSession session = request.getSession();
 		User editUser = (User) session.getAttribute("editUser");
+		User user = (User) session.getAttribute("loginUser");
 
 		editUser.setLoginId(request.getParameter("loginId"));
 		editUser.setPassword(request.getParameter("password"));
 		editUser.setName(request.getParameter("name"));
-		editUser.setBranchId(Integer.valueOf(request.getParameter("branch")));
-		editUser.setDepartmentId(Integer.valueOf(request.getParameter("department")));
+		if(user.getId() != editUser.getId()) {
+			editUser.setBranchId(Integer.valueOf(request.getParameter("branch")));
+			editUser.setDepartmentId(Integer.valueOf(request.getParameter("department")));
+		}
 		return editUser;
 	}
 
@@ -121,6 +146,8 @@ IOException {
 
 		if(StringUtils.isEmpty(name) == true) {
 			messages.add("名前を入力してください");
+		}else if(10 < name.length()) {
+			messages.add("名前は10文字以下で入力してください");
 		}
 
 		//ログインID入力チェック、ID重複チェック時に変更無し処理
@@ -132,9 +159,14 @@ IOException {
 			messages.add("このログインIDは既に使用されています");
 		}
 
+		if(StringUtils.isEmpty(password) == false && !password.matches("^[a-zA-Z0-9!-/:-@¥[-`{-~]]{6,255}$")){
+			messages.add("パスワードは6文字以上で入力してください");
+		}
+
 		if(!password.equals(password2)){
 			messages.add("変更用、確認用パスワードに相違があります");
 		}
+
 
 		if(messages.size() == 0) {
 			return true;

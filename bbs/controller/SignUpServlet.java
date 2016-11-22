@@ -34,7 +34,6 @@ public class SignUpServlet extends HttpServlet {
 		List<Department> department = new DepartmentService().getDepartment();
 
 		User user = new User();
-
 		request.setAttribute("user", user);
 
 
@@ -80,6 +79,7 @@ public class SignUpServlet extends HttpServlet {
 		String loginId = request.getParameter("login_id");
 		String password = request.getParameter("password");
 		String name = request.getParameter("name");
+		String password2 = request.getParameter("password2");
 		Integer branchId = Integer.valueOf(request.getParameter("branch"));
 		Integer departmentId = Integer.valueOf(request.getParameter("department"));
 
@@ -103,6 +103,8 @@ public class SignUpServlet extends HttpServlet {
 			messages.add("パスワードを入力してください");
 		}else if(!password.matches("^[a-zA-Z0-9!-/:-@¥[-`{-~]]{6,255}$")) {
 			messages.add("パスワードは6文字以上で入力してください");
+		}else if(!password.equals(password2)){
+			messages.add("確認用パスワードに相違があります");
 		}
 
 		if(branchId == 0) {
